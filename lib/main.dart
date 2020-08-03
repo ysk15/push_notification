@@ -32,7 +32,9 @@ class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging();
-  String _message = '';
+  String _message = "";
+  String _title="";
+  String _method="";
 
   _register() {
     _firebaseMessaging.getToken().then((token) => print(token));
@@ -62,19 +64,16 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              _message,
+              _title,
             ),
             Text(
               _message,
-              style: Theme.of(context).textTheme.headline4,
+            ),
+            Text(
+              _method,
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }
@@ -83,13 +82,28 @@ class _MyHomePageState extends State<MyHomePage> {
     _firebaseMessaging.configure(
         onMessage: (Map<String, dynamic> message) async {
           print('on message $message');
-          setState(() => _message = message["notification"]["title"]+" onmessage");
+          setState(() {
+            _message = message["notification"]["body"];
+            _title=message["notification"]["title"];
+            _method="on message";
+          });
+
         }, onResume: (Map<String, dynamic> message) async {
       print('on resume $message');
-      setState(() => _message = message["data"]["title"]+" onresume");
+      setState(() {
+        _message = message["data"]["body"];
+        _title=message["data"]["title"];
+        _method="on resume";
+      });
+
     }, onLaunch: (Map<String, dynamic> message) async {
       print('on launch $message');
-      setState(() => _message = message["data"]["title"]+" onlaunch");
+      setState(() {
+        _message = message["data"]["body"];
+        _title=message["data"]["title"];
+        _method="on launch";
+      });
+
     });
   }
 }
